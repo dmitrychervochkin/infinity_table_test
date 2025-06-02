@@ -61,6 +61,10 @@ const itemsSlice = createSlice({
     toggleShowSelectedOnly(state) {
       state.showSelectedOnly = !state.showSelectedOnly;
     },
+    setSelectedItems(state, action: PayloadAction<Item[]>) {
+      state.items = action.payload;
+      state.hasMore = false; 
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -80,5 +84,5 @@ const itemsSlice = createSlice({
     }
 });
 
-export const { setSearchQuery, selectItem, reorderItems, resetItems, toggleShowSelectedOnly } = itemsSlice.actions;
+export const { setSearchQuery, selectItem, reorderItems, resetItems, toggleShowSelectedOnly, setSelectedItems } = itemsSlice.actions;
 export default itemsSlice.reducer;

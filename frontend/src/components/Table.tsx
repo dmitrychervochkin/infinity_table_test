@@ -6,6 +6,7 @@ import {
   fetchInitialData,
   reorderItems,
   resetItems,
+  setSelectedItems,
   toggleShowSelectedOnly,
 } from '../features/itemsSlice';
 
@@ -22,12 +23,10 @@ const Table = () => {
     ? items.filter(item => item.selected)
     : items;
 
-  // 👉 1. При смене поискового запроса — сбрасываем список
   useEffect(() => {
     dispatch(resetItems());
-  }, [searchQuery]);
+  }, [searchQuery, dispatch]);
 
-  // 👉 2. Подгружаем при скролле
   useEffect(() => {
     if (observerRef.current) observerRef.current.disconnect();
 
@@ -40,16 +39,43 @@ const Table = () => {
     if (sentinelRef.current) {
       observerRef.current.observe(sentinelRef.current);
     }
-  }, [loading, hasMore]);
+  }, [loading, hasMore, dispatch]);
 
-  // 👉 3. Первый запрос, если данных ещё нет
   useEffect(() => {
     if (!items.length) {
       dispatch(fetchInitialData());
     }
-  }, []);
+  }, [items.length, dispatch]);
 
-  // 👉 DnD
+  useEffect(() => {
+    if (showSelectedOnly) {
+      const selectedIds = Object.entries(
+        (window as any).selectionState || {}
+      )
+        .filter(([_, val]) => val)
+        .map(([id]) => Number(id));
+  
+      if (selectedIds.length === 0) {
+        dispatch(resetItems());
+        return;
+      }
+  
+      fetch('https://infinity-table-server.onrender.com/items/by-ids', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: selectedIds }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          dispatch(resetItems());
+          dispatch(setSelectedItems(data));
+        });
+    } else {
+      dispatch(resetItems());
+      dispatch(fetchInitialData());
+    }
+  }, [showSelectedOnly]);
+
   const onDragStart = (index: number) => {
     setDraggedIndex(index);
   };

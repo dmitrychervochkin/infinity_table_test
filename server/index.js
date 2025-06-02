@@ -47,6 +47,15 @@ app.get('/items', (req, res) => {
     res.json(pageItems);
   });
 
+  app.post('/items/by-ids', (req, res) => {
+    const { ids } = req.body;
+    const result = ids
+      .map(id => items.find(item => item.id === id))
+      .filter(Boolean)
+      .map(item => ({ ...item, selected: !!selectionState[item.id] }));
+    res.json(result);
+  });
+
 app.post('/select', (req, res) => {
   const { id } = req.body;
   if (selectionState[id]) {
