@@ -9,7 +9,8 @@ app.use(express.json());
 app.get('/items', (req, res) => {
     const offset = parseInt(req.query.offset, 10) || 0;
     const limit = parseInt(req.query.limit, 10) || 20;
-    const search = (req.query.search || '').toLowerCase();
+    const normalize = str => str.toLowerCase().replace(/\s+/g, '');
+    const search = normalize(req.query.search || '');
   
     console.log('--- Request ---');
     console.log('Offset:', offset);
@@ -17,20 +18,22 @@ app.get('/items', (req, res) => {
     console.log('Search:', search);
   
     let filtered = search
-      ? items.filter(item => item.label.toLowerCase().includes(search))
-      : items;
+      ? items.filter(item => normalize(item.label).includes(search))
+      : items.slice();
   
     console.log('Total items:', items.length);
     console.log('Filtered items:', filtered.length);
   
-    if (sortOrder.length) {
+    if (!search && sortOrder.length) {
       const orderMap = new Map();
       sortOrder.forEach((id, idx) => orderMap.set(id, idx));
       filtered.sort((a, b) => {
-        const aPos = orderMap.has(a.id) ? orderMap.get(a.id) : Number.MAX_SAFE_INTEGER;
-        const bPos = orderMap.has(b.id) ? orderMap.get(b.id) : Number.MAX_SAFE_INTEGER;
+        const aPos = orderMap.has(a.id) ? orderMap.get(a.id) : a.id;
+        const bPos = orderMap.has(b.id) ? orderMap.get(b.id) : b.id;
         return aPos - bPos;
       });
+    } else if (!search) {
+      filtered.sort((a, b) => a.id - b.id);
     }
   
     const pageItems = filtered.slice(offset, offset + limit).map(item => ({

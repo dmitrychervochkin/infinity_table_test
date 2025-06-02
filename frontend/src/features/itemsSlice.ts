@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
+import { fetchWithCancel } from '../fetchWithCancel';
 
 interface Item {
   id: number;
@@ -32,8 +33,8 @@ export const fetchInitialData = createAsyncThunk(
     const offset = state.items.items.length;
     const query = state.items.searchQuery;
 
-    const res = await fetch(`https://infinity-table-server.onrender.com/items?offset=${offset}&limit=20&search=${query}`);
-    const data = await res.json();
+    const url = `https://infinity-table-server.onrender.com/items?offset=${offset}&limit=20&search=${query}`;
+    const data = await fetchWithCancel(url);
     return data;
   }
 );
