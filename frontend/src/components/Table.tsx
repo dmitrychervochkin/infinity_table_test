@@ -47,13 +47,13 @@ const Table = () => {
     setDraggedIndex(null);
     dispatch(reorderItems(newItems));
 
-    fetch('http://localhost:3000/sort', {
+    fetch(`${import.meta.env.REACT_APP_API_URL}/sort`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ids: newItems.map(i => i.id) }),
     });
   };
-
+  console.log(import.meta.env.REACT_APP_API_URL);
   return (
     <>
     <label style={{ display: 'flex',alignItems: 'center', gap: '10px', margin: '0 10px 5px 15px' }}>
