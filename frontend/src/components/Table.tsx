@@ -76,6 +76,23 @@ const Table = () => {
     });
   };
 
+  const onTouchDrop = (dropIndex: number) => {
+    if (draggedIndex === null || draggedIndex === dropIndex) return;
+  
+    const newItems = [...items];
+    const [movedItem] = newItems.splice(draggedIndex, 1);
+    newItems.splice(dropIndex, 0, movedItem);
+  
+    setDraggedIndex(null);
+    dispatch(reorderItems(newItems));
+  
+    fetch(`https://infinity-table-server.onrender.com/sort`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: newItems.map(i => i.id) }),
+    });
+  };
+
   return (
     <>
       <label
@@ -103,6 +120,7 @@ const Table = () => {
             onDragStart={() => onDragStart(index)}
             onDragOver={onDragOver}
             onDrop={() => onDrop(index)}
+            onTouchDrop={() => onTouchDrop(index)}
           />
         ))}
         <div ref={sentinelRef} style={{ height: 1 }} />

@@ -10,7 +10,7 @@ interface Item {
 
 interface ItemsState {
   items: Item[];
-  selectedItems: Item[]; // ДОБАВЬ ЭТО
+  selectedItems: Item[]; 
   loading: boolean;
   error: string | null;
   hasMore: boolean;
@@ -20,7 +20,7 @@ interface ItemsState {
 
 const initialState: ItemsState = {
   items: [],
-  selectedItems: [], // ДОБАВЬ ЭТО
+  selectedItems: [], 
   loading: false,
   error: null,
   hasMore: true,
