@@ -10,6 +10,7 @@ interface Item {
 
 interface ItemsState {
   items: Item[];
+  selectedItems: Item[]; // ДОБАВЬ ЭТО
   loading: boolean;
   error: string | null;
   hasMore: boolean;
@@ -19,6 +20,7 @@ interface ItemsState {
 
 const initialState: ItemsState = {
   items: [],
+  selectedItems: [], // ДОБАВЬ ЭТО
   loading: false,
   error: null,
   hasMore: true,
@@ -53,17 +55,22 @@ const itemsSlice = createSlice({
     },
     selectItem(state, action: PayloadAction<number>) {
       const item = state.items.find(i => i.id === action.payload);
-      if (item) item.selected = !item.selected;
+      if (item) {
+        item.selected = !item.selected;
+    
+        if (item.selected) {
+          const alreadyIn = state.selectedItems.find(i => i.id === item.id);
+          if (!alreadyIn) state.selectedItems.push({ ...item });
+        } else {
+          state.selectedItems = state.selectedItems.filter(i => i.id !== item.id);
+        }
+      }
     },
     reorderItems(state, action: PayloadAction<Item[]>) {
       state.items = action.payload;
     },
     toggleShowSelectedOnly(state) {
       state.showSelectedOnly = !state.showSelectedOnly;
-    },
-    setSelectedItems(state, action: PayloadAction<Item[]>) {
-      state.items = action.payload;
-      state.hasMore = false; 
     }
   },
   extraReducers: (builder) => {
@@ -84,5 +91,5 @@ const itemsSlice = createSlice({
     }
 });
 
-export const { setSearchQuery, selectItem, reorderItems, resetItems, toggleShowSelectedOnly, setSelectedItems } = itemsSlice.actions;
+export const { setSearchQuery, selectItem, reorderItems, resetItems, toggleShowSelectedOnly } = itemsSlice.actions;
 export default itemsSlice.reducer;

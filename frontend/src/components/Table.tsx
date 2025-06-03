@@ -6,12 +6,11 @@ import {
   fetchInitialData,
   reorderItems,
   resetItems,
-  setSelectedItems,
   toggleShowSelectedOnly,
 } from '../features/itemsSlice';
 
 const Table = () => {
-  const { items, loading, hasMore, searchQuery, showSelectedOnly } = useSelector(
+  const { items, loading, hasMore, searchQuery, showSelectedOnly, selectedItems } = useSelector(
     (state: RootState) => state.items
   );
   const dispatch = useDispatch<AppDispatch>();
@@ -20,8 +19,8 @@ const Table = () => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const displayedItems = showSelectedOnly
-    ? items.filter(item => item.selected)
-    : items;
+  ? selectedItems // показывай именно сохранённые, не фильтрованные
+  : items;
 
   useEffect(() => {
     dispatch(resetItems());
@@ -48,33 +47,9 @@ const Table = () => {
   }, [items.length, dispatch]);
 
   useEffect(() => {
-    if (showSelectedOnly) {
-      const selectedIds = Object.entries(
-        (window as any).selectionState || {}
-      )
-        .filter(([_, val]) => val)
-        .map(([id]) => Number(id));
-  
-      if (selectedIds.length === 0) {
-        dispatch(resetItems());
-        return;
-      }
-  
-      fetch('https://infinity-table-server.onrender.com/items/by-ids', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: selectedIds }),
-      })
-        .then(res => res.json())
-        .then(data => {
-          dispatch(resetItems());
-          dispatch(setSelectedItems(data));
-        });
-    } else {
-      dispatch(resetItems());
-      dispatch(fetchInitialData());
-    }
-  }, [showSelectedOnly]);
+    dispatch(resetItems());
+    dispatch(fetchInitialData());
+  }, [searchQuery, showSelectedOnly]);
 
   const onDragStart = (index: number) => {
     setDraggedIndex(index);
