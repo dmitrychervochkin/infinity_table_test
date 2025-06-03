@@ -8,10 +8,9 @@ interface RowProps {
   onDragStart: () => void;
   onDragOver: (e: React.DragEvent) => void;
   onDrop: () => void;
-  onTouchDrop: () => void;
 }
   
-  const Row: React.FC<RowProps> = ({ item, index, onDragStart, onDragOver, onDrop, onTouchDrop }) => {
+  const Row: React.FC<RowProps> = ({ item, index, onDragStart, onDragOver, onDrop }) => {
     const dispatch = useDispatch();
   
     const handleSelect = () => {
@@ -22,18 +21,6 @@ interface RowProps {
         body: JSON.stringify({ id: item.id })
       });
     };
-
-    const handleTouchStart = () => {
-      onDragStart(); 
-    };
-    
-    const handleTouchMove = (e: React.TouchEvent) => {
-      e.preventDefault();
-    };
-    
-    const handleTouchEnd = () => {
-      onTouchDrop(); 
-    };
   
     return (
       <div
@@ -42,9 +29,6 @@ interface RowProps {
         onDragStart={onDragStart}
         onDragOver={onDragOver}
         onDrop={onDrop}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
         style={{
           WebkitUserSelect: 'none',
           userSelect: 'none',
