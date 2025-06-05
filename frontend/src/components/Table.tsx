@@ -72,7 +72,7 @@ const Table = () => {
     fetch(`https://infinity-table-server.onrender.com/sort`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ids: newItems.map(i => i.id) }),
+      body: JSON.stringify({ ids: newItems.map(i => Number(i.id)) })
     });
   };
 

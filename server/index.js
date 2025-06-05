@@ -27,13 +27,12 @@ app.get('/items', (req, res) => {
     if (!search && sortOrder.length) {
       const orderMap = new Map();
       sortOrder.forEach((id, idx) => orderMap.set(id, idx));
+    
       filtered.sort((a, b) => {
         const aPos = orderMap.has(a.id) ? orderMap.get(a.id) : a.id;
         const bPos = orderMap.has(b.id) ? orderMap.get(b.id) : b.id;
         return aPos - bPos;
       });
-    } else if (!search) {
-      filtered.sort((a, b) => a.id - b.id);
     }
   
     const pageItems = filtered.slice(offset, offset + limit).map(item => ({
@@ -68,10 +67,12 @@ app.post('/select', (req, res) => {
 
 app.post('/sort', (req, res) => {
   const { ids } = req.body;
+
   if (Array.isArray(ids)) {
     sortOrder.length = 0;
-    sortOrder.push(...ids);
+    sortOrder.push(...ids.map(Number)); 
   }
+
   res.json({ ok: true });
 });
 

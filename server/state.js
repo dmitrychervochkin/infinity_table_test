@@ -1,6 +1,6 @@
 const ITEMS_TOTAL = 1_000_000;
 
-const items = Array.from({ length: ITEMS_TOTAL }, (_, i) => ({
+const items = Array.from({ length: 1000000 }, (_, i) => ({
   id: i + 1,
   label: `Элемент ${i + 1}`
 }));
