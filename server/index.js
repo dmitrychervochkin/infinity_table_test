@@ -26,13 +26,17 @@ app.get('/items', (req, res) => {
   
     if (!search && sortOrder.length) {
       const orderMap = new Map();
-      sortOrder.forEach((id, idx) => orderMap.set(id, idx));
+      sortOrder.map(Number).forEach((id, idx) => orderMap.set(id, idx));
     
       filtered.sort((a, b) => {
-        const aPos = orderMap.has(a.id) ? orderMap.get(a.id) : a.id;
-        const bPos = orderMap.has(b.id) ? orderMap.get(b.id) : b.id;
+        const aId = Number(a.id);
+        const bId = Number(b.id);
+        const aPos = orderMap.has(aId) ? orderMap.get(aId) : aId;
+        const bPos = orderMap.has(bId) ? orderMap.get(bId) : bId;
         return aPos - bPos;
       });
+    } else if (!search) {
+      filtered.sort((a, b) => Number(a.id) - Number(b.id));
     }
   
     const pageItems = filtered.slice(offset, offset + limit).map(item => ({
