@@ -40,7 +40,7 @@ export const fetchInitialData = createAsyncThunk(
     const offset = state.items.items.length;
     const query = state.items.searchQuery;
 
-    const url = `http://localhost:3000/items?offset=${offset}&limit=20&search=${query}`;
+    const url = `https://infinity-table-server.onrender.com/items?offset=${offset}&limit=20&search=${query}`;
 
     const res = await fetch(url, { signal: abortController.signal });
     return await res.json();

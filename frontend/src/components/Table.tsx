@@ -79,7 +79,7 @@ const Table = () => {
   
     dispatch(reorderItems(updated));
   
-    fetch(`http://localhost:3000/sort`, {
+    fetch(`https://infinity-table-server.onrender.com/sort`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ids: updated.map(i => i.id) }),

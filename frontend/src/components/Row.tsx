@@ -15,7 +15,7 @@ interface RowProps {
   
     const handleSelect = () => {
       dispatch(selectItem(item.id));
-      fetch(`http://localhost:3000/select`, {
+      fetch(`https://infinity-table-server.onrender.com/select`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: item.id })
