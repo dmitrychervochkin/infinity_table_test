@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
-import { fetchWithCancel } from '../fetchWithCancel';
 
 interface Item {
   id: number;
   label: string;
   selected: boolean;
+  sortOrder: number;
 }
 
 interface ItemsState {
