@@ -18,7 +18,7 @@ const SearchBar = () => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
   };
-  console.log(value)
+
   return (
     <div style={{ marginBottom: '10px' }}>
       <input

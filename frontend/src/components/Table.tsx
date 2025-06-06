@@ -19,7 +19,7 @@ const Table = () => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const displayedItems = showSelectedOnly
-  ? selectedItems // показывай именно сохранённые, не фильтрованные
+  ? selectedItems
   : items;
 
   useEffect(() => {
@@ -61,19 +61,31 @@ const Table = () => {
 
   const onDrop = (dropIndex: number) => {
     if (draggedIndex === null || draggedIndex === dropIndex) return;
-
-    const newItems = [...items];
-    const [movedItem] = newItems.splice(draggedIndex, 1);
-    newItems.splice(dropIndex, 0, movedItem);
-
-    setDraggedIndex(null);
-    dispatch(reorderItems(newItems));
-
-    fetch(`https://infinity-table-server.onrender.com/sort`, {
+  
+    const draggedItem = displayedItems[draggedIndex];
+    const targetItem = displayedItems[dropIndex];
+  
+    if (!draggedItem || !targetItem) return;
+  
+    const fullList = [...items];
+    const fromIndex = fullList.findIndex(i => i.id === draggedItem.id);
+    const toIndex = fullList.findIndex(i => i.id === targetItem.id);
+  
+    if (fromIndex === -1 || toIndex === -1) return;
+  
+    const updated = [...fullList];
+    const [movedItem] = updated.splice(fromIndex, 1);
+    updated.splice(toIndex, 0, movedItem);
+  
+    dispatch(reorderItems(updated));
+  
+    fetch(`http://localhost:3000/sort`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ids: newItems.map(i => Number(i.id)) })
+      body: JSON.stringify({ ids: updated.map(i => i.id) }),
     });
+  
+    setDraggedIndex(null);
   };
 
   return (
@@ -97,13 +109,13 @@ const Table = () => {
       <div data-column="exercises" style={{ height: '700px', overflowY: 'auto' }}>
         {displayedItems.map((item, index) => (
           <Row
-            key={item.id}
-            item={item}
-            index={index}
-            onDragStart={() => onDragStart(index)}
-            onDragOver={onDragOver}
-            onDrop={() => onDrop(index)}
-          />
+          key={item.id}
+          item={item}
+          index={index}
+          onDragStart={() => onDragStart(index)}
+          onDragOver={onDragOver}
+          onDrop={() => onDrop(index)}
+        />
         ))}
         <div ref={sentinelRef} style={{ height: 1 }} />
         {loading && !showSelectedOnly && (
